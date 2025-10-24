@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Random Inspirational Quote</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #0b1225;
+      --text: #e5e7eb;
+      --muted: #9aa4b2;
+      --accent: #6ee7b7;
+      --accent-2: #60a5fa;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji;
+      background: radial-gradient(1000px 600px at 10% -10%, #1f2a55 0%, rgba(15,23,42,0) 60%), radial-gradient(1000px 600px at 110% 110%, #0c2b2b 0%, rgba(15,23,42,0) 60%), var(--bg);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .card {
+      width: 100%;
+      max-width: 780px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 28px 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    }
+    .title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      letter-spacing: 0.2px;
+      color: var(--muted);
+      margin: 0 0 12px;
+    }
+    .title .dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 0 12px rgba(110,231,183,0.7);
+    }
+    blockquote {
+      position: relative;
+      margin: 12px 0 0;
+      padding: 10px 0 0 0;
+      font-size: clamp(22px, 3.2vw, 34px);
+      line-height: 1.35;
+      font-weight: 600;
+      color: #f3f4f6;
+    }
+    blockquote::before, blockquote::after {
+      content: "“";
+      position: absolute;
+      font-size: 64px;
+      line-height: 0;
+      color: rgba(110,231,183,0.25);
+      transform: translateY(-12px);
+    }
+    blockquote::before { left: -6px; top: 24px; }
+    blockquote::after { content: "”"; right: 6px; bottom: -12px; }
+    .quote-text {
+      display: block;
+      padding: 6px 0;
+      text-wrap: balance;
+    }
+    .meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .author { color: #d1d5db; font-weight: 600; }
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-left: auto;
+    }
+    button {
+      appearance: none;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 0.08s ease, background 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+    }
+    button:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.24); }
+    button:active { transform: translateY(1px); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 24px;
+      color: var(--muted);
+      margin-top: 12px;
+      font-size: 14px;
+    }
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.25);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error {
+      color: #fecaca;
+    }
+    .sr-only {
+      position: absolute !important;
+      height: 1px; width: 1px;
+      overflow: hidden;
+      clip: rect(1px, 1px, 1px, 1px);
+      white-space: nowrap;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 12px;
+      color: rgba(229,231,235,0.6);
+    }
+    a, a:visited { color: #a5b4fc; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <main class="card" role="main">
+    <div class="title" aria-hidden="true">
+      <span class="dot"></span>
+      Random Inspirational Quote
+    </div>
+
+    <blockquote aria-live="polite" aria-atomic="true">
+      <span id="quote" class="quote-text">Loading an inspiring thought...</span>
+    </blockquote>
+
+    <div class="meta">
+      <div>
+        <span class="sr-only">Author:</span>
+        — <span id="author" class="author">Please wait</span>
+      </div>
+      <div class="controls">
+        <button id="newBtn" type="button" aria-label="Get a new quote">New Quote</button>
+        <button id="copyBtn" type="button" aria-label="Copy quote to clipboard" title="Copy quote">Copy</button>
+      </div>
+    </div>
+
+    <div class="status" id="status" aria-live="polite">
+      <span id="spinner" class="spinner" style="display:none"></span>
+      <span id="statusText"></span>
+    </div>
+
+    <div class="footer">
+      Powered by <a href="https://api.quotable.io" target="_blank" rel="noopener noreferrer">Quotable API</a>
+    </div>
+  </main>
+
+  <script>
+    const quoteEl = document.getElementById('quote');
+    const authorEl = document.getElementById('author');
+    const newBtn = document.getElementById('newBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const statusEl = document.getElementById('status');
+    const spinner = document.getElementById('spinner');
+    const statusText = document.getElementById('statusText');
+
+    let inFlightController = null;
+
+    function setLoading(isLoading, message = '') {
+      spinner.style.display = isLoading ? 'inline-block' : 'none';
+      statusText.textContent = message;
+      newBtn.disabled = isLoading;
+      copyBtn.disabled = isLoading || !quoteEl.textContent.trim();
+    }
+
+    function setError(msg) {
+      statusText.textContent = msg;
+      statusText.classList.add('error');
+    }
+
+    function clearError() {
+      statusText.classList.remove('error');
+    }
+
+    async function fetchQuote() {
+      clearError();
+      setLoading(true, 'Fetching a fresh quote...');
+      if (inFlightController) {
+        inFlightController.abort();
+      }
+      inFlightController = new AbortController();
+      const timeoutId = setTimeout(() => inFlightController.abort(), 10000);
+
+      try {
+        const res = await fetch('https://api.quotable.io/random', {
+          headers: { 'Accept': 'application/json' },
+          signal: inFlightController.signal,
+          cache: 'no-store',
+        });
+        if (!res.ok) throw new Error('Request failed: ' + res.status);
+        const data = await res.json();
+        const text = data.content || 'Keep going. Everything you need will come to you at the perfect time.';
+        const author = data.author || 'Unknown';
+
+        quoteEl.textContent = text;
+        authorEl.textContent = author;
+        setLoading(false, 'Here is your inspiration!');
+      } catch (err) {
+        let msg = 'Could not fetch quote. Please try again.';
+        if (err.name === 'AbortError') msg = 'Request timed out. Try again.';
+        setError(msg);
+        setLoading(false);
+      } finally {
+        clearTimeout(timeoutId);
+        inFlightController = null;
+      }
+    }
+
+    async function copyQuote() {
+      const text = `“${quoteEl.textContent.trim()}” — ${authorEl.textContent.trim()}`;
+      try {
+        await navigator.clipboard.writeText(text);
+        statusText.textContent = 'Quote copied to clipboard!';
+      } catch {
+        setError('Copy failed. You can select and copy manually.');
+      }
+    }
+
+    newBtn.addEventListener('click', fetchQuote);
+    copyBtn.addEventListener('click', copyQuote);
+    document.addEventListener('keydown', (e) => {
+      if ((e.key === 'r' && (e.ctrlKey || e.metaKey)) || (e.key === 'Enter' && document.activeElement === newBtn)) {
+        e.preventDefault();
+        fetchQuote();
+      }
+    });
+
+    // Initial fetch
+    fetchQuote();
+  </script>
+</body>
+</html>
